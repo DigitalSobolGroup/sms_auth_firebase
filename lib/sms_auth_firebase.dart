@@ -26,7 +26,7 @@ class AuthService {
       final userData = jsonDecode(response.body);
       await _saveOrUpdateUser(userData);
     } else {
-      throw Exception('Failed to register user');
+      throw Exception('Ошибка регистрации');
     }
   }
 
@@ -92,7 +92,7 @@ class AuthService {
     final userId = prefs.getString('user_id');
 
     if (userId == null) {
-      throw Exception('User not logged in');
+      throw Exception('Нет пользователя');
     }
 
     await _firestore.collection('users').doc(userId).update(updatedData);
@@ -104,7 +104,7 @@ class AuthService {
     final userId = prefs.getString('user_id');
 
     if (userId == null) {
-      throw Exception('User not logged in');
+      throw Exception('Нет пользователя');
     }
 
     await _firestore.collection('users').doc(userId).delete();
