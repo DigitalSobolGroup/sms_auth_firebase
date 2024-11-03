@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sms_auth_firebase/auth_service.dart';
-import 'package:sms_auth_firebase/auth_service_provider.dart';
+import 'package:sms_auth_firebase/sms_auth_firebase.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -43,8 +42,8 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _smsCodeController = TextEditingController();
+  String? _uuid;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: Text('Пример регистрации'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -60,26 +59,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           children: [
             TextField(
               controller: _phoneNumberController,
-              decoration: InputDecoration(labelText: 'Phone Number'),
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: 'Номер телефона'),
             ),
             ElevatedButton(
               onPressed: () async {
                 try {
-                  await authService.registerUser(
-                    _phoneNumberController.text,
-                    _nameController.text,
-                    _emailController.text,
-                  );
+                  _uuid = await authService
+                      .sendPhoneNumber(_phoneNumberController.text);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('User registered successfully')),
+                    SnackBar(content: Text('СМС отправлен')),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -87,8 +75,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   );
                 }
               },
-              child: Text('Register'),
+              child: Text('Отправить СМС'),
             ),
+            if (_uuid != null) ...[
+              TextField(
+                controller: _smsCodeController,
+                decoration: InputDecoration(labelText: 'Код из СМС'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await authService.registerUser(
+                      _phoneNumberController.text,
+                      _uuid!,
+                      _smsCodeController.text,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Пользователь зарегистрирован')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
+                    );
+                  }
+                },
+                child: Text('Проверить код из СМС'),
+              ),
+            ],
           ],
         ),
       ),
@@ -101,10 +114,10 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Main Screen'),
+        title: Text('Главный экран'),
       ),
       body: Center(
-        child: Text('Welcome to the main screen!'),
+        child: Text('Типа главный экран'),
       ),
     );
   }
