@@ -49,7 +49,7 @@ class AuthService {
     if (isVerified) {
       final userData = {
         'phonenumber': phoneNumber,
-        'uid': uuid,
+        'id': uuid,
         'otp': code,
         'name': '',
       };
@@ -64,12 +64,12 @@ class AuthService {
     final existingPhoneNumber = prefs.getString('user_phonenumber');
 
     if (existingPhoneNumber == userData['phonenumber']) {
-      final existingUserId = prefs.getString('user_uid');
+      final existingUserId = prefs.getString('user_id');
       await _firestore.collection('usersSMS').doc(existingUserId).update({
         'otp': userData['otp'],
       });
     } else {
-      await _firestore.collection('usersSMS').doc(userData['uid']).set(userData);
+      await _firestore.collection('usersSMS').doc(userData['id']).set(userData);
     }
 
     await _saveUserToSharedPreferences(userData);
@@ -78,7 +78,7 @@ class AuthService {
   Future<void> _saveUserToSharedPreferences(
       Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_ uid', userData['uid']);
+    await prefs.setString('user_id', userData['id']);
     await prefs.setString('user_phonenumber', userData['phonenumber']);
     await prefs.setString('user_otp', userData['otp']);
     await prefs.setString('user_name', userData['name']);
@@ -86,7 +86,7 @@ class AuthService {
 
   Future<bool> isUserRegistered() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_uid');
+    final userId = prefs.getString('user_id');
     final phoneNumber = prefs.getString('user_phonenumber');
     final otp = prefs.getString('user_otp');
 
@@ -96,7 +96,7 @@ class AuthService {
 
     final querySnapshot = await _firestore
         .collection('usersSMS')
-        .where('uid', isEqualTo: userId)
+        .where('id', isEqualTo: userId)
         .where('phonenumber', isEqualTo: phoneNumber)
         .where('otp', isEqualTo: otp)
         .get();
@@ -106,7 +106,7 @@ class AuthService {
 
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_uid');
+    final userId = prefs.getString('user_id');
 
     if (userId == null) {
       return null;
@@ -118,7 +118,7 @@ class AuthService {
 
   Future<void> updateUserData(Map<String, dynamic> updatedData) async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_uid');
+    final userId = prefs.getString('user_id');
 
     if (userId == null) {
       throw Exception('Нет пользователя');
@@ -130,7 +130,7 @@ class AuthService {
 
   Future<void> deleteUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_uid');
+    final userId = prefs.getString('user_id');
 
     if (userId == null) {
       throw Exception('Нет пользователя');
@@ -138,17 +138,17 @@ class AuthService {
 
     await _firestore.collection('usersSMS').doc(userId).delete();
     await prefs.clear();
-    exit(0); // Terminate the application
+    exit(0);
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     final phoneNumber = prefs.getString('user_phonenumber');
-    final userId = prefs.getString('user_uid');
+    final userId = prefs.getString('user_id');
 
     if (phoneNumber != null && userId != null) {
       await prefs.setString('user_otp', '');
     }
-    exit(0); // Terminate the application
+    exit(0);
   }
 }
