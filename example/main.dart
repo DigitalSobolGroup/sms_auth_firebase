@@ -3,19 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sms_auth_firebase/sms_auth_firebase.dart';
 
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: AuthCheckScreen(),
     );
   }
 }
 
 class AuthCheckScreen extends ConsumerWidget {
+  const AuthCheckScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authService = ref.watch(authServiceProvider);
@@ -24,7 +28,7 @@ class AuthCheckScreen extends ConsumerWidget {
       future: authService.isUserRegistered(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else if (snapshot.hasData && snapshot.data == true) {
           return MainScreen();
         } else {
@@ -36,6 +40,8 @@ class AuthCheckScreen extends ConsumerWidget {
 }
 
 class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -51,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Пример регистрации'),
+        title: const Text('Пример регистрации'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -59,7 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           children: [
             TextField(
               controller: _phoneNumberController,
-              decoration: InputDecoration(labelText: 'Номер телефона'),
+              decoration: const InputDecoration(labelText: 'Номер телефона'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -67,7 +73,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   _uuid = await authService
                       .sendPhoneNumber(_phoneNumberController.text);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('СМС отправлен')),
+                    const SnackBar(content: Text('СМС отправлен')),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -75,12 +81,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   );
                 }
               },
-              child: Text('Отправить СМС'),
+              child: const Text('Отправить СМС'),
             ),
             if (_uuid != null) ...[
               TextField(
                 controller: _smsCodeController,
-                decoration: InputDecoration(labelText: 'Код из СМС'),
+                decoration: const InputDecoration(labelText: 'Код из СМС'),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -91,7 +97,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       _smsCodeController.text,
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Пользователь зарегистрирован')),
+                      const SnackBar(
+                          content: Text('Пользователь зарегистрирован')),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +106,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     );
                   }
                 },
-                child: Text('Проверить код из СМС'),
+                child: const Text('Проверить код из СМС'),
               ),
             ],
           ],
@@ -110,13 +117,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 }
 
 class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Главный экран'),
+        title: const Text('Главный экран'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Типа главный экран'),
       ),
     );
