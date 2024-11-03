@@ -1,4 +1,4 @@
-name: sms_auth_firebase
+name: sms_auth_firebase_example
 description: "A new Flutter project."
 version: 0.0.1
 homepage:
@@ -14,12 +14,13 @@ dependencies:
   cloud_firestore: ^3.1.5
   shared_preferences: ^2.0.6
   flutter_riverpod: ^1.0.0
+  sms_auth_firebase:
+    path: "../"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  mockito: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

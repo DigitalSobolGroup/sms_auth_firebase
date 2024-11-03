@@ -52,7 +52,6 @@ class AuthService {
         'uid': uuid,
         'otp': code,
         'name': '',
-        'email': ''
       };
       await _saveOrUpdateUser(userData);
     } else {
@@ -66,11 +65,11 @@ class AuthService {
 
     if (existingPhoneNumber == userData['phonenumber']) {
       final existingUserId = prefs.getString('user_uid');
-      await _firestore.collection('users').doc(existingUserId).update({
+      await _firestore.collection('usersSMS').doc(existingUserId).update({
         'otp': userData['otp'],
       });
     } else {
-      await _firestore.collection('users').doc(userData['uid']).set(userData);
+      await _firestore.collection('usersSMS').doc(userData['uid']).set(userData);
     }
 
     await _saveUserToSharedPreferences(userData);
@@ -83,7 +82,6 @@ class AuthService {
     await prefs.setString('user_phonenumber', userData['phonenumber']);
     await prefs.setString('user_otp', userData['otp']);
     await prefs.setString('user_name', userData['name']);
-    await prefs.setString('user_email', userData['email']);
   }
 
   Future<bool> isUserRegistered() async {
@@ -97,7 +95,7 @@ class AuthService {
     }
 
     final querySnapshot = await _firestore
-        .collection('users')
+        .collection('usersSMS')
         .where('uid', isEqualTo: userId)
         .where('phonenumber', isEqualTo: phoneNumber)
         .where('otp', isEqualTo: otp)
@@ -114,7 +112,7 @@ class AuthService {
       return null;
     }
 
-    final docSnapshot = await _firestore.collection('users').doc(userId).get();
+    final docSnapshot = await _firestore.collection('usersSMS').doc(userId).get();
     return docSnapshot.data();
   }
 
@@ -126,7 +124,7 @@ class AuthService {
       throw Exception('Нет пользователя');
     }
 
-    await _firestore.collection('users').doc(userId).update(updatedData);
+    await _firestore.collection('usersSMS').doc(userId).update(updatedData);
     await _saveUserToSharedPreferences(updatedData);
   }
 
@@ -138,7 +136,7 @@ class AuthService {
       throw Exception('Нет пользователя');
     }
 
-    await _firestore.collection('users').doc(userId).delete();
+    await _firestore.collection('usersSMS').doc(userId).delete();
     await prefs.clear();
     exit(0); // Terminate the application
   }
